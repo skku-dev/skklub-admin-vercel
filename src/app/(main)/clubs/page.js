@@ -24,6 +24,8 @@ import {
 	MaterialReactTable,
 	useMaterialReactTable,
 } from 'material-react-table';
+import { useRecoilState } from 'recoil';
+import { UserState } from '@/utils/recoil/atoms';
 
 const Clubs = () => {
 	const [data, setData] = useState([]);
@@ -45,6 +47,8 @@ const Clubs = () => {
 
 	const [campus, setCampus] = useState('명륜');
 	const [clubType, setClubType] = useState('중앙동아리');
+
+	const [user, setUser] = useRecoilState(UserState);
 
 	useEffect(() => {
 		const fetchData = async () => {
@@ -76,7 +80,7 @@ const Clubs = () => {
 				setIsRefetching(false);
 			} else {
 				try {
-					switch (window.localStorage.getItem('role')) {
+					switch (user.role) {
 						case 'ROLE_MASTER':
 							break;
 						case 'ROLE_ADMIN_SUWON_CENTRAL':
@@ -233,7 +237,7 @@ const Clubs = () => {
 	} else {
 		return (
 			<TableContainer>
-				{window.localStorage.getItem('role') === 'ROLE_MASTER' ? (
+				{user.role === 'ROLE_MASTER' ? (
 					<div>
 						<ToggleButtonGroup
 							color="primary"

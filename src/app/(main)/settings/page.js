@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
 	Box,
 	Container,
@@ -26,11 +26,20 @@ const Settings = () => {
 	const [passwordMatchError, setPasswordMatchError] = useState(false);
 
 	const [inputValue, setInputValue] = useState({
-		presidentName: window.localStorage.getItem('presidentName'),
-		presidentContact: window.localStorage.getItem('presidentContact'),
+		presidentName: '',
+		presidentContact: '',
 		password1: '',
 		password2: '',
 	});
+
+	useEffect(() => {
+		setInputValue({
+			presidentName: window.localStorage.getItem('presidentName'),
+			presidentContact: window.localStorage.getItem('presidentContact'),
+			password1: '',
+			password2: '',
+		});
+	}, []);
 
 	const handleClickShowPassword1 = () => setShowPassword1((show) => !show);
 	const handleClickShowPassword2 = () => setShowPassword2((show) => !show);

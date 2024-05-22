@@ -117,12 +117,11 @@ const SideNav = (props) => {
 				<Stack component="nav" spacing={0.5}>
 					{items.map((item) => {
 						const active = item.path ? pathname === item.path : false;
-						const role = window.localStorage.getItem('role');
 
 						if (
-							role === 'ROLE_MASTER' ||
-							role === 'ROLE_ADMIN_SUWON_CENTRAL' ||
-							role === 'ROLE_ADMIN_SEOUL_CENTRAL'
+							user.role === 'ROLE_MASTER' ||
+							user.role === 'ROLE_ADMIN_SUWON_CENTRAL' ||
+							user.role === 'ROLE_ADMIN_SEOUL_CENTRAL'
 						) {
 							if (item.admin === 1 || item.admin === 0) {
 								return (
