@@ -8,7 +8,7 @@ const axiosInterceptorInstance = axios.create({
 axiosInterceptorInstance.interceptors.request.use(
 	(config) => {
 		// Modify the request config here (add headers, authentication tokens)
-		const accessToken = localStorage.getItem('key');
+		const accessToken = window.localStorage.getItem('key');
 
 		// If token is present, add it to request's Authorization Header
 		if (accessToken) {

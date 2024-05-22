@@ -117,7 +117,7 @@ const SideNav = (props) => {
 				<Stack component="nav" spacing={0.5}>
 					{items.map((item) => {
 						const active = item.path ? pathname === item.path : false;
-						const role = localStorage.getItem('role');
+						const role = window.localStorage.getItem('role');
 
 						if (
 							role === 'ROLE_MASTER' ||

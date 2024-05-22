@@ -61,11 +61,11 @@ export const MainLayout = (props) => {
 		axiosInterceptorInstance
 			.get('/refresh', {
 				headers: {
-					'refresh-token': localStorage.getItem('refresh'),
+					'refresh-token': window.localStorage.getItem('refresh'),
 				},
 			})
 			.then((res) => {
-				localStorage.setItem('key', res.headers['authorization']);
+				window.localStorage.setItem('key', res.headers['authorization']);
 				setSessionTime(1800000);
 				setOpenDialog(false);
 			})

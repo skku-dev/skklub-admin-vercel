@@ -26,8 +26,8 @@ const Settings = () => {
 	const [passwordMatchError, setPasswordMatchError] = useState(false);
 
 	const [inputValue, setInputValue] = useState({
-		presidentName: localStorage.getItem('presidentName'),
-		presidentContact: localStorage.getItem('presidentContact'),
+		presidentName: window.localStorage.getItem('presidentName'),
+		presidentContact: window.localStorage.getItem('presidentContact'),
 		password1: '',
 		password2: '',
 	});
@@ -59,8 +59,6 @@ const Settings = () => {
 			return false;
 		});
 	};
-
-	
 
 	return (
 		<>

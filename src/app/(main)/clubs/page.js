@@ -76,7 +76,7 @@ const Clubs = () => {
 				setIsRefetching(false);
 			} else {
 				try {
-					switch (localStorage.getItem('role')) {
+					switch (window.localStorage.getItem('role')) {
 						case 'ROLE_MASTER':
 							break;
 						case 'ROLE_ADMIN_SUWON_CENTRAL':
@@ -233,7 +233,7 @@ const Clubs = () => {
 	} else {
 		return (
 			<TableContainer>
-				{localStorage.getItem('role') === 'ROLE_MASTER' ? (
+				{window.localStorage.getItem('role') === 'ROLE_MASTER' ? (
 					<div>
 						<ToggleButtonGroup
 							color="primary"

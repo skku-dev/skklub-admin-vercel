@@ -24,8 +24,11 @@ const Account = () => {
 			.get(`/club/my`)
 			.then((res) => {
 				setClubData(res.data);
-				localStorage.setItem('presidentContact', res.data.presidentContact);
-				localStorage.setItem('presidentName', res.data.presidentName);
+				window.localStorage.setItem(
+					'presidentContact',
+					res.data.presidentContact
+				);
+				window.localStorage.setItem('presidentName', res.data.presidentName);
 			})
 			.catch((err) => {
 				console.log(err);

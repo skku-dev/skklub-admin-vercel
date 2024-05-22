@@ -21,11 +21,14 @@ export const useUserLoginApi = () => {
 			.post(`/user/login?username=${id}&password=${pw}`)
 			.then((response) => {
 				console.log(response.data);
-				localStorage.setItem('key', response.headers['authorization']);
-				localStorage.setItem('refresh', response.headers['refresh-token']);
-				localStorage.setItem('userid', response.data.id);
-				localStorage.setItem('username', response.data.username);
-				localStorage.setItem('role', response.data.role);
+				window.localStorage.setItem('key', response.headers['authorization']);
+				window.localStorage.setItem(
+					'refresh',
+					response.headers['refresh-token']
+				);
+				window.localStorage.setItem('userid', response.data.id);
+				window.localStorage.setItem('username', response.data.username);
+				window.localStorage.setItem('role', response.data.role);
 				setUser({
 					name: response.data.username,
 					role: response.data.role,
@@ -68,7 +71,7 @@ export const useUserLogoutApi = () => {
 				withCredentials: true,
 			})
 			.then((response) => {
-				localStorage.clear();
+				window.localStorage.clear();
 				setUser({
 					name: '',
 					role: '',
@@ -104,8 +107,8 @@ export const useUserEditApi = () => {
 export const useClubInfoApi = () => {
 	const [clubInfo, setClubInfo] = useState(null);
 	useEffect(() => {
-		const userid = localStorage.getItem('userid');
-		const auth = localStorage.getItem('key');
+		const userid = window.localStorage.getItem('userid');
+		const auth = window.localStorage.getItem('key');
 		if (userid) {
 			const getClubInfo = async () => {
 				await axiosInterceptorInstance
