@@ -12,13 +12,14 @@ import { AccountProfile } from '@/components/account/account-profile';
 import { AccountProfileDetails } from '@/components/account/account-profile-details';
 import { useEffect, useState } from 'react';
 import axiosInterceptorInstance from '../../../../axios/axiosInterceptorInstance';
+import { useRecoilState } from 'recoil';
+import { UserState } from '@/utils/recoil/atoms';
 
 const Account = () => {
-	const [username, setUsername] = useState('');
+	const [user, setUser] = useRecoilState(UserState);
 	const [clubData, setClubData] = useState(null);
 
 	useEffect(() => {
-		setUsername(localStorage.getItem('username'));
 		axiosInterceptorInstance
 			.get(`/club/my`)
 			.then((res) => {
@@ -57,7 +58,7 @@ const Account = () => {
 							<Typography variant="h4">
 								<b style={{ color: '#80A4FF' }}>
 									{'[ '}
-									{username ? username : '동아리'}
+									{user.name ? user.name : '동아리'}
 									{' ]  '}
 								</b>
 								정보 수정
