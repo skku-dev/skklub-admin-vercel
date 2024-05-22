@@ -20,6 +20,8 @@ import styled from '@emotion/styled';
 import { useEffect, useState } from 'react';
 import { useUserLogoutApi } from '@/hooks/use-user';
 import { formatMs } from '@/utils/formatMs';
+import { useRecoilState } from 'recoil';
+import { UserState } from '@/utils/recoil/atoms';
 
 const Container = styled(Box)`
 	display: flex;
@@ -63,15 +65,10 @@ const SideNav = (props) => {
 	const { open, onClose } = props;
 	const pathname = usePathname();
 	const lgUp = useMediaQuery((theme) => theme.breakpoints.up('lg'));
-	const [username, setUsername] = useState('');
-	const [role, setRole] = useState('');
+
+	const [user, setUser] = useRecoilState(UserState);
 
 	const [logout] = useUserLogoutApi();
-
-	useEffect(() => {
-		setUsername(localStorage.getItem('username'));
-		setRole(localStorage.getItem('role')?.split('_')[1]);
-	}, []);
 
 	const handleClick = (e) => {
 		e.preventDefault();
@@ -94,7 +91,7 @@ const SideNav = (props) => {
 					<ProfileContainer>
 						<div>
 							<Typography color="inherit" variant="subtitle1">
-								{username ? username : '알수없음'}
+								{user.name ? user.name : '알수없음'}
 							</Typography>
 							<Typography color="neutral.400" variant="body2">
 								남은 시간: {formatMs(props.sessionTime)}
