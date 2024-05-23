@@ -55,16 +55,6 @@ const Home = () => {
 					<div>
 						<Stack spacing={1} sx={{ mb: 3 }}>
 							<Typography variant="h4">SKKLUB ADMIN</Typography>
-							<Typography color="text.secondary" variant="body2">
-								<MUILink
-									component={Link}
-									href="/register"
-									underline="hover"
-									variant="subtitle2"
-								>
-									회원가입하기
-								</MUILink>
-							</Typography>
 						</Stack>
 						<Tabs sx={{ mb: 3 }} value="ID">
 							<Tab label="Login" value="ID" />
