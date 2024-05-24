@@ -9,7 +9,7 @@ import {
 } from '@mui/material';
 import styled from '@emotion/styled';
 import Image from 'next/image';
-import { useRef, useState } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import axiosInterceptorInstance from '../../../axios/axiosInterceptorInstance';
 import imageCompression from 'browser-image-compression';
 
@@ -83,12 +83,7 @@ export const AccountProfile = ({ url, clubId }) => {
 	return (
 		<Card>
 			<ProfileCardContent>
-				<Image
-					src={imageUrl}
-					alt="club image"
-					width={220}
-					height={220}
-				/>
+				<Image src={imageUrl} alt="club image" width={220} height={220} />
 			</ProfileCardContent>
 			<Divider />
 
