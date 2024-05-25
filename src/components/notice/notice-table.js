@@ -78,14 +78,11 @@ const NoticeTable = () => {
 		// 	setIsLoading(false);
 		// 	setIsRefetching(false);
 		// } else {
-		if (user.role === 'ROLE_MASTER') {
-			setRole('');
-		}
 
 		axios
 			.get('/notice/prev', {
 				params: {
-					role: user.role,
+					role: user.role === 'ROLE_MASTER' ? '' : user.role,
 					page: pagination.pageIndex,
 					size: pagination.pageSize,
 				},
