@@ -236,7 +236,7 @@ export const useEditClubInfoApiAdmin = () => {
 				data.append('webLink2', values.webLink2 || '');
 
 				axiosInterceptorInstance
-					.patch(`/club/${id}`, data, {
+					.patch(`/club/${values.id}`, data, {
 						headers: {
 							'Content-Type': 'multipart/form-data',
 						},
