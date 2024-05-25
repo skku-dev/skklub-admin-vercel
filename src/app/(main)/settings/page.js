@@ -38,7 +38,7 @@ const Settings = () => {
 	const [showPassword1, setShowPassword1] = useState(false);
 	const [showPassword2, setShowPassword2] = useState(false);
 	const [showPasswordConfirm, setShowPasswordConfirm] = useState(false);
-	const [userId, setUserId] = useState(window.localStorage.getItem('userid'));
+	const [userId, setUserId] = useState('');
 
 	const [passwordMatchError, setPasswordMatchError] = useState(false);
 
@@ -50,6 +50,7 @@ const Settings = () => {
 	});
 
 	useEffect(() => {
+		setUserId(window.localStorage.getItem('userId'));
 		setInputValue({
 			presidentName: window.localStorage.getItem('presidentName'),
 			presidentContact: window.localStorage.getItem('presidentContact'),
