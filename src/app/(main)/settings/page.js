@@ -6,22 +6,39 @@ import {
 	Container,
 	Stack,
 	Divider,
-	Grid,
 	Typography,
 	TextField,
 	Button,
 	FormControl,
-	InputLabel,
-	OutlinedInput,
 	InputAdornment,
 	IconButton,
+	Dialog,
+	DialogContent,
+	DialogTitle,
+	DialogActions,
+	DialogContentText,
 } from '@mui/material';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
+import styled from '@emotion/styled';
+import CloseIcon from '@mui/icons-material/Close';
+import axiosInterceptorInstance from '../../../../axios/axiosInterceptorInstance';
+import { error } from '@/utils/theme/colors';
+
+const BootstrapDialog = styled(Dialog)(({ theme }) => ({
+	'& .MuiDialogContent-root': {
+		padding: theme.spacing(2),
+	},
+	'& .MuiDialogActions-root': {
+		padding: theme.spacing(1),
+	},
+}));
 
 const Settings = () => {
 	const [showPassword1, setShowPassword1] = useState(false);
 	const [showPassword2, setShowPassword2] = useState(false);
+	const [showPasswordConfirm, setShowPasswordConfirm] = useState(false);
+	const [userId, setUserId] = useState(window.localStorage.getItem('userid'));
 
 	const [passwordMatchError, setPasswordMatchError] = useState(false);
 
@@ -38,17 +55,25 @@ const Settings = () => {
 			presidentContact: window.localStorage.getItem('presidentContact'),
 			password1: '',
 			password2: '',
+			passwordConfirm: '',
 		});
 	}, []);
 
 	const handleClickShowPassword1 = () => setShowPassword1((show) => !show);
 	const handleClickShowPassword2 = () => setShowPassword2((show) => !show);
+	const handleClickShowPasswordConfirm = () =>
+		setShowPasswordConfirm((show) => !show);
 
 	const handleMouseDownPassword1 = (event) => {
 		event.preventDefault();
 	};
 
 	const handleMouseDownPassword2 = (event) => {
+		event.preventDefault();
+		// match with password 1
+	};
+
+	const handleMouseDownPasswordConfirm = (event) => {
 		event.preventDefault();
 		// match with password 1
 	};
@@ -62,11 +87,66 @@ const Settings = () => {
 		}));
 
 		setPasswordMatchError(() => {
-			if (value !== inputValue.password1) {
+			if (value !== inputValue.password1 && name === 'password2') {
 				return true;
 			}
 			return false;
 		});
+	};
+
+	const passwordChangeSubmit = () => {
+		axiosInterceptorInstance
+			.post(
+				`/user/${userId}?password=${inputValue.password1}&name=${inputValue.presidentName}&contact=${inputValue.presidentContact}`
+			)
+			.then((response) => {
+				setInputValue((prevData) => ({
+					...prevData,
+					password1: '',
+					password2: '',
+				}));
+			})
+			.catch((error) => {
+				alert(error);
+			});
+	};
+
+	const [open, setOpen] = useState(false);
+	const [loadingBtnStatus, setLoadingBtnStatus] = useState(false);
+	const [passwordConfirmMatchError, setPasswordConfirmMatchError] =
+		useState(false);
+
+	const handleClose = () => {
+		setOpen(false);
+	};
+
+	const handleUserInfoEditBtn = () => {
+		setOpen(true);
+	};
+
+	const userInfoEditSubmit = () => {
+		setLoadingBtnStatus(true);
+		// match with password
+
+		axiosInterceptorInstance
+			.post(
+				`/user/${userId}?password=${inputValue.passwordConfirm}&name=${inputValue.presidentName}&contact=${inputValue.presidentContact}`
+			)
+			.then((response) => {
+				console.log(response);
+				setLoadingBtnStatus(false);
+				setInputValue((prevData) => ({
+					...prevData,
+					passwordConfirm: '',
+				}));
+				handleClose();
+				setPasswordConfirmMatchError(false);
+			})
+			.catch((error) => {
+				console.log(error);
+				setLoadingBtnStatus(false);
+				setPasswordConfirmMatchError(true);
+			});
 	};
 
 	return (
@@ -78,6 +158,76 @@ const Settings = () => {
 					py: 8,
 				}}
 			>
+				<BootstrapDialog
+					onClose={handleClose}
+					aria-labelledby="customized-dialog-title"
+					open={open}
+				>
+					<Dialog open={open} onClose={handleClose}>
+						<DialogTitle sx={{ m: 0, p: 3 }}>
+							{'유저 정보를 수정하시겠습니까?'}
+						</DialogTitle>
+
+						<IconButton
+							aria-label="close"
+							onClick={handleClose}
+							sx={{
+								position: 'absolute',
+								right: 8,
+								top: 8,
+								color: (theme) => theme.palette.grey[500],
+							}}
+						>
+							<CloseIcon />
+						</IconButton>
+						<DialogContent dividers>
+							<Typography gutterBottom>
+								유저 정보를 수정하려면 비밀번호를 입력해주세요.
+							</Typography>
+							<TextField
+								label="비밀번호"
+								type={showPasswordConfirm ? 'text' : 'password'}
+								InputProps={{
+									endAdornment: (
+										<InputAdornment position="end">
+											<IconButton
+												aria-label="toggle password visibility"
+												onClick={handleClickShowPasswordConfirm}
+												onMouseDown={handleMouseDownPasswordConfirm}
+												edge="end"
+											>
+												{showPasswordConfirm ? (
+													<VisibilityOff />
+												) : (
+													<Visibility />
+												)}
+											</IconButton>
+										</InputAdornment>
+									),
+								}}
+								name="passwordConfirm"
+								onChange={handleInputChange}
+								value={inputValue.passwordConfirm}
+								error={passwordConfirmMatchError}
+								helperText={
+									passwordConfirmMatchError
+										? '비밀번호가 일치하지 않습니다.'
+										: ''
+								}
+							/>
+						</DialogContent>
+						<DialogActions>
+							<Button
+								onClick={userInfoEditSubmit}
+								autoFocus
+								loading={loadingBtnStatus}
+							>
+								변경하기
+							</Button>
+						</DialogActions>
+					</Dialog>
+				</BootstrapDialog>
+
 				<Container maxWidth="lg">
 					<Stack spacing={3}>
 						<div>
@@ -85,7 +235,13 @@ const Settings = () => {
 						</div>
 						<div>
 							{/* Change password */}
-							<Stack direction="row" spacing={2}>
+							<Stack
+								direction="row"
+								spacing={2}
+								sx={{
+									mb: 1,
+								}}
+							>
 								<div>
 									<Typography
 										variant="h5"
@@ -131,6 +287,7 @@ const Settings = () => {
 									marginTop: '10px',
 									marginBottom: '30px',
 								}}
+								onClick={handleUserInfoEditBtn}
 								disabled
 							>
 								유저 정보 수정하기
@@ -231,6 +388,7 @@ const Settings = () => {
 										marginTop: '10px',
 										marginBottom: '30px',
 									}}
+									disabled
 								>
 									비밀번호 변경
 								</Button>

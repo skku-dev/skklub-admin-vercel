@@ -18,6 +18,7 @@ import {
 	DialogTitle,
 } from '@mui/material';
 import axiosInterceptorInstance from '../../axios/axiosInterceptorInstance';
+import { useUserLoginApi, useUserLogoutApi } from '@/hooks/use-user';
 
 const SIDE_NAV_WIDTH = 280;
 
@@ -46,6 +47,8 @@ export const MainLayout = (props) => {
 
 	const [sessionTime, setSessionTime] = useRecoilState(SessionTimeState);
 	const [sessionDialog, setSessionDialog] = useRecoilState(SessionDialogState);
+
+	const [logout] = useUserLogoutApi();
 
 	const handlePathnameChange = useCallback(() => {
 		if (openNav) {
@@ -80,15 +83,15 @@ export const MainLayout = (props) => {
 
 			const timerTimeout = setInterval(() => {
 				setSessionTime((prevTime) => prevTime - 1000);
+				if (sessionTime <= 300000 && sessionDialog === false) {
+					setOpenDialog(true);
+					setSessionDialog(true);
+				}
+
+				if (sessionTime === 0) {
+					logout();
+				}
 			}, 1000);
-
-			console.log(sessionTime);
-			console.log(sessionDialog);
-
-			if (sessionTime <= 300000 && sessionDialog === false) {
-				setOpenDialog(true);
-				setSessionDialog(true);
-			}
 
 			return () => clearTimeout(timerTimeout);
 		},
