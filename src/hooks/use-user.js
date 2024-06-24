@@ -40,7 +40,6 @@ export const useUserLoginApi = () => {
 				return response.data.role;
 			})
 			.then((role) => {
-				console.log(role);
 				if (
 					role === 'ROLE_MASTER' ||
 					role === 'ROLE_ADMIN_SEOUL_CENTRAL' ||
@@ -58,6 +57,32 @@ export const useUserLoginApi = () => {
 	};
 
 	return [login];
+};
+
+export const useUserRefreshApi = () => {
+	const [sessionTime, setSessionTime] = useRecoilState(SessionTimeState);
+	const [sessionDialog, setSessionDialog] = useRecoilState(SessionDialogState);
+
+	const refresh = () => {
+		axiosInterceptorInstance
+			.get('/refresh', {
+				headers: {
+					'refresh-token': window.localStorage.getItem('refresh'),
+				},
+			})
+			.then((res) => {
+				window.localStorage.setItem('key', res.headers['authorization']);
+				setSessionTime(1800000);
+				setSessionDialog(false);
+				return true;
+			})
+			.catch((err) => {
+				console.log(err);
+				return false;
+			});
+	};
+
+	return [refresh];
 };
 
 export const useUserLogoutApi = () => {

@@ -50,7 +50,7 @@ const Settings = () => {
 	});
 
 	useEffect(() => {
-		setUserId(window.localStorage.getItem('userId'));
+		setUserId(window.localStorage.getItem('userid'));
 		setInputValue({
 			presidentName: window.localStorage.getItem('presidentName'),
 			presidentContact: window.localStorage.getItem('presidentContact'),
@@ -289,7 +289,6 @@ const Settings = () => {
 									marginBottom: '30px',
 								}}
 								onClick={handleUserInfoEditBtn}
-								disabled
 							>
 								유저 정보 수정하기
 							</Button>
@@ -389,7 +388,7 @@ const Settings = () => {
 										marginTop: '10px',
 										marginBottom: '30px',
 									}}
-									disabled
+									onClick={passwordChangeSubmit}
 								>
 									비밀번호 변경
 								</Button>

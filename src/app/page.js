@@ -1,34 +1,35 @@
 'use client';
 
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import {
-  Alert,
-  Box,
-  Button,
-  FormHelperText,
-  Link as MUILink,
-  Stack,
-  Tab,
-  Tabs,
-  TextField,
-  Typography,
-} from "@mui/material";
-import { LoginLayout } from "@/layouts/loginLayout";
-import { useUserLoginApi } from "@/hooks/use-user";
+	Alert,
+	Box,
+	Button,
+	FormHelperText,
+	Link as MUILink,
+	Stack,
+	Tab,
+	Tabs,
+	TextField,
+	Typography,
+} from '@mui/material';
+import { LoginLayout } from '@/layouts/loginLayout';
+import { useUserLoginApi, useUserRefreshApi } from '@/hooks/use-user';
 
 const Home = () => {
-  const router = useRouter();
-  const [id, setID] = useState("");
-  const [pw, setPW] = useState("");
-  const [login] = useUserLoginApi();
-  
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    login(id, pw);
-  };
+	const [id, setID] = useState('');
+	const [pw, setPW] = useState('');
+	const [login] = useUserLoginApi();
+
+	const handleSubmit = (e) => {
+		e.preventDefault();
+		login(id, pw);
+	};
+
+	useEffect(() => {}, []);
 
 	return (
 		<LoginLayout>
@@ -69,7 +70,6 @@ const Home = () => {
 									onChange={(e) => setID(e.target.value)}
 									type="ID"
 									value={id}
-
 								/>
 								<TextField
 									fullWidth
@@ -78,7 +78,6 @@ const Home = () => {
 									onChange={(e) => setPW(e.target.value)}
 									type="password"
 									value={pw}
-
 								/>
 							</Stack>
 
@@ -89,6 +88,7 @@ const Home = () => {
 								type="submit"
 								variant="contained"
 								onClick={handleSubmit}
+								loading={login.isLoading}
 							>
 								Continue
 							</Button>

@@ -10,6 +10,7 @@ import {
 	Drawer as MuiDrawer,
 	Stack as MuiStack,
 	SvgIcon,
+	Stack,
 	Typography,
 	Tooltip,
 	useMediaQuery,
@@ -24,6 +25,7 @@ import { useUserLogoutApi } from '@/hooks/use-user';
 import { formatMs } from '@/utils/formatMs';
 import { useRecoilState } from 'recoil';
 import { UserState } from '@/utils/recoil/atoms';
+import RefreshIcon from '@mui/icons-material/Refresh';
 
 const Container = styled(Box)`
 	display: flex;
@@ -57,7 +59,7 @@ const Drawer = styled(MuiDrawer)`
 	}
 `;
 
-const Stack = styled(MuiStack)`
+const MStack = styled(MuiStack)`
 	list-style: none;
 	padding: 24px 16px;
 	margin: 0;
@@ -92,12 +94,36 @@ const SideNav = (props) => {
 					</LogoContainer>
 					<ProfileContainer>
 						<div>
-							<Typography color="inherit" variant="subtitle1">
+							<Typography color="inherit" variant="h6" sx={{
+								paddingTop:	2,
+							}}>
 								{user.name ? user.name : '알수없음'}
 							</Typography>
-							<Typography color="neutral.400" variant="body2">
-								남은 시간: {formatMs(props.sessionTime)}
-							</Typography>
+							<Stack
+								direction={'row'}
+								alignItems={'center'}
+								spacing={1}
+								sx={{
+									paddingTop: 1,
+									paddingBottom: 1,
+								}}
+							>
+								<Typography color="neutral.400" variant="body2" sx={{
+									pt: 0.2
+								}}>
+									남은 시간: {formatMs(props.sessionTime)}
+								</Typography>
+								<IconButton onClick={() => props.setOpenDialog(true)}>
+									<RefreshIcon
+										color="primary"
+										sx={{
+											cursor: 'pointer',
+											width: 20,
+											height: 20,
+										}}
+									/>
+								</IconButton>
+							</Stack>
 						</div>
 						<Tooltip title="로그아웃" arrow>
 							<IconButton onClick={handleClick}>
@@ -114,7 +140,7 @@ const SideNav = (props) => {
 					</ProfileContainer>
 				</Box>
 				<Divider sx={{ borderColor: 'neutral.700' }} />
-				<Stack component="nav" spacing={0.5}>
+				<MStack component="nav" spacing={0.5}>
 					{items.map((item) => {
 						const active = item.path ? pathname === item.path : false;
 
@@ -152,7 +178,7 @@ const SideNav = (props) => {
 							}
 						}
 					})}
-				</Stack>
+				</MStack>
 			</Container>
 		</Drawer>
 	);

@@ -58,14 +58,7 @@ const Account = () => {
 				<Container maxWidth="lg">
 					<Stack spacing={3}>
 						<div>
-							<Typography variant="h4">
-								<b style={{ color: '#80A4FF' }}>
-									{'[ '}
-									{user.name ? user.name : '동아리'}
-									{' ]  '}
-								</b>
-								정보 수정
-							</Typography>
+							<Typography variant="h4">정보 수정</Typography>
 						</div>
 						<div>
 							<Grid container spacing={3}>

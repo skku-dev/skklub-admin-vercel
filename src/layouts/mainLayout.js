@@ -57,6 +57,7 @@ export const MainLayout = (props) => {
 	}, [openNav]);
 
 	const handleClose = () => {
+		setSessionDialog(false);
 		setOpenDialog(false);
 	};
 
@@ -70,6 +71,7 @@ export const MainLayout = (props) => {
 			.then((res) => {
 				window.localStorage.setItem('key', res.headers['authorization']);
 				setSessionTime(1800000);
+				setSessionDialog(false);
 				setOpenDialog(false);
 			})
 			.catch((err) => {
@@ -83,22 +85,23 @@ export const MainLayout = (props) => {
 
 			const timerTimeout = setInterval(() => {
 				setSessionTime((prevTime) => prevTime - 1000);
-				if (sessionTime <= 300000 && sessionDialog === false) {
-					setOpenDialog(true);
-					setSessionDialog(true);
-				}
-
-				if (sessionTime === 0) {
-					logout();
-				}
 			}, 1000);
 
 			return () => clearTimeout(timerTimeout);
 		},
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 
-		[pathname]
+		[pathname, sessionDialog, openDialog]
 	);
+
+	if (sessionTime < 300000 && sessionDialog === false) {
+		setOpenDialog(true);
+		setSessionDialog(true);
+	}
+
+	if (sessionTime === 0) {
+		logout();
+	}
 
 	return (
 		<>
@@ -135,6 +138,7 @@ export const MainLayout = (props) => {
 				onClose={() => setOpenNav(false)}
 				open={openNav}
 				sessionTime={sessionTime}
+				setOpenDialog={setOpenDialog}
 			/>
 			<LayoutRoot>
 				<LayoutContainer>{children}</LayoutContainer>
