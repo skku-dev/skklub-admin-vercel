@@ -57,7 +57,11 @@ export const AccountProfileDetails = () => {
 
 	return (
 		<form autoComplete="off" noValidate onSubmit={handleSubmit}>
-			<Card>
+			<Card
+				sx={{
+					margin: 2,
+				}}
+			>
 				<CardHeader subheader="자유롭게 정보를 수정해보세요!" />
 				<CardContent sx={{ pt: 0 }}>
 					<Box sx={{ m: -1.5 }}>

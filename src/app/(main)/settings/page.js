@@ -17,13 +17,20 @@ import {
 	DialogTitle,
 	DialogActions,
 	DialogContentText,
+	CircularProgress,
+	Backdrop,
 } from '@mui/material';
+import Callout from '@/components/common/callout';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import styled from '@emotion/styled';
 import CloseIcon from '@mui/icons-material/Close';
 import axiosInterceptorInstance from '../../../../axios/axiosInterceptorInstance';
 import { error } from '@/utils/theme/colors';
+
+import { useRecoilState } from 'recoil';
+import { UserState } from '@/utils/recoil/atoms';
+import { useUserLogoutApi } from '@/hooks/use-user';
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
 	'& .MuiDialogContent-root': {
@@ -39,8 +46,14 @@ const Settings = () => {
 	const [showPassword2, setShowPassword2] = useState(false);
 	const [showPasswordConfirm, setShowPasswordConfirm] = useState(false);
 	const [userId, setUserId] = useState('');
+	const [backdropState, setBackdropState] = useState(false);
+
+	const [user, setUser] = useRecoilState(UserState);
 
 	const [passwordMatchError, setPasswordMatchError] = useState(false);
+	const [passwordBtnState, setPasswordBtnState] = useState(true);
+
+	const [logout] = useUserLogoutApi();
 
 	const [inputValue, setInputValue] = useState({
 		presidentName: '',
@@ -50,34 +63,25 @@ const Settings = () => {
 	});
 
 	useEffect(() => {
+		user.role !== 'ROLE_USER'
+			? null
+			: axiosInterceptorInstance.get(`/club/my`).then((res) => {
+					setInputValue({
+						presidentName: res.data.presidentName,
+						presidentContact: res.data.presidentContact,
+						password1: '',
+						password2: '',
+						passwordConfirm: '',
+					});
+			  });
+
 		setUserId(window.localStorage.getItem('userid'));
-		setInputValue({
-			presidentName: window.localStorage.getItem('presidentName'),
-			presidentContact: window.localStorage.getItem('presidentContact'),
-			password1: '',
-			password2: '',
-			passwordConfirm: '',
-		});
 	}, []);
 
 	const handleClickShowPassword1 = () => setShowPassword1((show) => !show);
 	const handleClickShowPassword2 = () => setShowPassword2((show) => !show);
 	const handleClickShowPasswordConfirm = () =>
 		setShowPasswordConfirm((show) => !show);
-
-	const handleMouseDownPassword1 = (event) => {
-		event.preventDefault();
-	};
-
-	const handleMouseDownPassword2 = (event) => {
-		event.preventDefault();
-		// match with password 1
-	};
-
-	const handleMouseDownPasswordConfirm = (event) => {
-		event.preventDefault();
-		// match with password 1
-	};
 
 	const handleInputChange = (e) => {
 		const { name, value } = e.target;
@@ -93,9 +97,22 @@ const Settings = () => {
 			}
 			return false;
 		});
+
+		setPasswordBtnState(() => {
+			if (
+				value === inputValue.password1 &&
+				value !== '' &&
+				inputValue.password1 !== '' &&
+				inputValue.password2 !== ''
+			) {
+				return false;
+			}
+			return true;
+		});
 	};
 
 	const passwordChangeSubmit = () => {
+		setBackdropState(true);
 		axiosInterceptorInstance
 			.post(
 				`/user/${userId}?password=${inputValue.password1}&name=${inputValue.presidentName}&contact=${inputValue.presidentContact}`
@@ -106,9 +123,12 @@ const Settings = () => {
 					password1: '',
 					password2: '',
 				}));
+
+				logout();
 			})
 			.catch((error) => {
 				alert(error);
+				setBackdropState(false);
 			});
 	};
 
@@ -159,6 +179,12 @@ const Settings = () => {
 					py: 8,
 				}}
 			>
+				<Backdrop
+					sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+					open={backdropState}
+				>
+					<CircularProgress color="inherit" />
+				</Backdrop>
 				<BootstrapDialog
 					onClose={handleClose}
 					aria-labelledby="customized-dialog-title"
@@ -194,7 +220,6 @@ const Settings = () => {
 											<IconButton
 												aria-label="toggle password visibility"
 												onClick={handleClickShowPasswordConfirm}
-												onMouseDown={handleMouseDownPasswordConfirm}
 												edge="end"
 											>
 												{showPasswordConfirm ? (
@@ -234,64 +259,78 @@ const Settings = () => {
 						<div>
 							<Typography variant="h4">설정 페이지</Typography>
 						</div>
+						<Callout title="유의사항" emoji="📌">
+							유저네임, 전화번호 변경, 비밀번호 변경 후 자동으로 로그아웃
+							됩니다.
+							<br />
+							비밀번호 변경 버튼은 비밀번호가 일치할 때만 활성화됩니다.
+						</Callout>
 						<div>
 							{/* Change password */}
-							<Stack
-								direction="row"
-								spacing={2}
-								sx={{
-									mb: 1,
-								}}
-							>
+							{user.role !== 'ROLE_USER' ? (
+								<Callout title="없는 기능입니다" emoji="🔒">
+									관리자 계정은 인적사항 데이터가 존재하지 않습니다
+								</Callout>
+							) : (
 								<div>
-									<Typography
-										variant="h5"
+									<Stack
+										direction="row"
+										spacing={2}
 										sx={{
-											marginBottom: '10px',
+											mb: 1,
 										}}
 									>
-										유저네임 변경
-									</Typography>
-									<TextField
-										required
-										id="outlined-required"
-										label="Required"
-										name="presidentName"
-										value={inputValue.presidentName}
-										onChange={handleInputChange}
-									/>
-								</div>
+										<div>
+											<Typography
+												variant="h5"
+												sx={{
+													marginBottom: '10px',
+												}}
+											>
+												유저네임 변경
+											</Typography>
+											<TextField
+												required
+												id="outlined-required"
+												label="Required"
+												name="presidentName"
+												value={inputValue.presidentName}
+												onChange={handleInputChange}
+											/>
+										</div>
 
-								<div>
-									<Typography
-										variant="h5"
+										<div>
+											<Typography
+												variant="h5"
+												sx={{
+													marginBottom: '10px',
+												}}
+											>
+												전화번호 변경
+											</Typography>
+											<TextField
+												required
+												id="outlined-required"
+												label="Required"
+												name="presidentContact"
+												value={inputValue.presidentContact}
+												onChange={handleInputChange}
+											/>
+										</div>
+									</Stack>
+
+									<Button
+										variant="contained"
 										sx={{
-											marginBottom: '10px',
+											marginTop: '10px',
+											marginBottom: '30px',
 										}}
+										onClick={handleUserInfoEditBtn}
 									>
-										전화번호 변경
-									</Typography>
-									<TextField
-										required
-										id="outlined-required"
-										label="Required"
-										name="presidentContact"
-										value={inputValue.presidentContact}
-										onChange={handleInputChange}
-									/>
+										유저 정보 수정하기
+									</Button>
 								</div>
-							</Stack>
-
-							<Button
-								variant="contained"
-								sx={{
-									marginTop: '10px',
-									marginBottom: '30px',
-								}}
-								onClick={handleUserInfoEditBtn}
-							>
-								유저 정보 수정하기
-							</Button>
+							)}
 
 							<Divider
 								sx={{
@@ -325,7 +364,6 @@ const Settings = () => {
 														<IconButton
 															aria-label="toggle password visibility"
 															onClick={handleClickShowPassword1}
-															onMouseDown={handleMouseDownPassword1}
 															edge="end"
 														>
 															{showPassword1 ? (
@@ -358,7 +396,6 @@ const Settings = () => {
 														<IconButton
 															aria-label="toggle password visibility"
 															onClick={handleClickShowPassword2}
-															onMouseDown={handleMouseDownPassword2}
 															edge="end"
 														>
 															{showPassword2 ? (
@@ -389,6 +426,7 @@ const Settings = () => {
 										marginBottom: '30px',
 									}}
 									onClick={passwordChangeSubmit}
+									disabled={passwordBtnState}
 								>
 									비밀번호 변경
 								</Button>

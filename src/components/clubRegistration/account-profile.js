@@ -57,7 +57,9 @@ export const AccountProfile = ({ clubId }) => {
 	};
 
 	return (
-		<Card>
+		<Card sx={{
+			margin: 2,
+		}}>
 			<ProfileCardContent>
 				<Image
 					src="/assets/profile.jpeg"

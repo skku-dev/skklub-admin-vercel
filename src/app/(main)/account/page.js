@@ -16,7 +16,6 @@ import { useRecoilState } from 'recoil';
 import { UserState } from '@/utils/recoil/atoms';
 
 const Account = () => {
-	const [user, setUser] = useRecoilState(UserState);
 	const [clubData, setClubData] = useState(null);
 
 	useEffect(() => {
@@ -24,11 +23,11 @@ const Account = () => {
 			.get(`/club/my`)
 			.then((res) => {
 				setClubData(res.data);
-				window.localStorage.setItem(
-					'presidentContact',
-					res.data.presidentContact
-				);
-				window.localStorage.setItem('presidentName', res.data.presidentName);
+				// window.localStorage.setItem(
+				// 	'presidentContact',
+				// 	res.data.presidentContact
+				// );
+				// window.localStorage.setItem('presidentName', res.data.presidentName);
 			})
 			.catch((err) => {
 				console.log(err);
